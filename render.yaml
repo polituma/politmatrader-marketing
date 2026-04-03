@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: politmatrader-marketing
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app.main:app --worker-class uvicorn.workers.UvicornWorker --workers 2 --bind 0.0.0.0:$PORT --timeout 120
+    healthCheckPath: /system/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DATABASE_URL
+        value: sqlite:///./politma_marketing.db
+      - key: LOG_LEVEL
+        value: INFO
+      - key: BRAND_NAME
+        value: POLITMATRADER
+      - key: BRAND_DOMAIN
+        value: https://politmatrader.com
+      - key: API_KEYS
+        generateValue: true
+      - key: WEBHOOK_SECRET
+        generateValue: true
