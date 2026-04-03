@@ -25,14 +25,11 @@ USER appuser
 
 EXPOSE ${PORT:-8080}
 
-# Railway provides its own healthcheck; remove Docker-level HEALTHCHECK
-# to avoid port conflicts when Railway overrides the CMD via startCommand.
-
-# Default CMD — Railway's startCommand in railway.toml overrides this
-CMD ["gunicorn", "app.main:app", \
-     "--worker-class", "uvicorn.workers.UvicornWorker", \
-     "--workers", "2", \
-     "--bind", "0.0.0.0:8080", \
-     "--timeout", "120", \
-     "--access-logfile", "-", \
-     "--error-logfile", "-"]
+# Use shell form so $PORT is expanded at runtime
+CMD gunicorn app.main:app \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --workers 2 \
+    --bind 0.0.0.0:${PORT:-8080} \
+    --timeout 120 \
+    --access-logfile - \
+    --error-logfile -
